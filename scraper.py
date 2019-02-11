@@ -16,7 +16,6 @@ def scan_all_campsites():
 
 
 def found_availabilities(availabilities):
-
     message = ''
     for availability in availabilities:
         message += '<!channel> Availability at campground <https://www.recreation.gov/camping/campgrounds/' + availability[0] + '|' + availability[0] + '>:<https://www.recreation.gov/camping/campsites/' + availability[1] + '|' + availability[1] + '> on ' + availability[2] + '\n'
@@ -24,12 +23,12 @@ def found_availabilities(availabilities):
     slack_token = config['slack_token']
     channel = config['slack_channel']
     sc = SlackClient(slack_token)
-    print(sc.api_call(
+    sc.api_call(
         "chat.postMessage",
         channel=channel,
         text=message,
         as_user=False
-    ))
+    )
 
 
 def scan_campsite(id, year, month):
