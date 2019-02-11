@@ -60,7 +60,7 @@ def site_not_in_pickle(site):
     try:
         availabilities_pickle = pickle.load(open('availabilities.pickle', 'rb'))
         print(availabilities_pickle)
-    except(EOFError) as e:
+    except(EOFError, FileNotFoundError) as e:
         availabilities_pickle = set()
         pickle.dump(availabilities_pickle, open('availabilities.pickle', 'wb'))
     if site in availabilities_pickle:
