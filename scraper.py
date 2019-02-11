@@ -55,5 +55,3 @@ scan_all_campsites()
 
 if available_campsites.__len__() > 0:
     found_availabilities(available_campsites)
-
-
