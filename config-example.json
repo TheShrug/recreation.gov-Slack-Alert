@@ -1,0 +1,16 @@
+{
+  "campsites" : [
+    "232473",
+    "232472",
+    "272299",
+    "272300",
+    "232470",
+    "232471"
+  ],
+  "dayofweek": "5",
+  "year": "2019",
+  "start_month": "2",
+  "end_month": "3",
+  "slack_token": "XXX",
+  "slack_channel": "XXXXXXX"
+}
