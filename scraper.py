@@ -24,7 +24,6 @@ def found_availabilities(availabilities):
     for availability in availabilities:
         message += '<!channel> New availability at campground <https://www.recreation.gov/camping/campgrounds/' + availability.campground + '|' + availability.campground + '>:<https://www.recreation.gov/camping/campsites/' + availability.campsite + '|' + availability.campsite + '> on ' + availability.date + '\n'
 
-    print(message)
     slack_token = config['slack_token']
     channel = config['slack_channel']
     sc = SlackClient(slack_token)
