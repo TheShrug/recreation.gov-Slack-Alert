@@ -1,10 +1,14 @@
 from datetime import datetime
 import requests
 import json
+import pickle
+import collections
 from slackclient import SlackClient
 
 with open('config.json') as config_file:
     config = json.loads(config_file.read())
+
+Site = collections.namedtuple('Site', 'campground, campsite, date')
 
 
 def scan_all_campsites():
@@ -18,7 +22,7 @@ def scan_all_campsites():
 def found_availabilities(availabilities):
     message = ''
     for availability in availabilities:
-        message += '<!channel> Availability at campground <https://www.recreation.gov/camping/campgrounds/' + availability[0] + '|' + availability[0] + '>:<https://www.recreation.gov/camping/campsites/' + availability[1] + '|' + availability[1] + '> on ' + availability[2] + '\n'
+        message += '<!channel> New availability at campground <https://www.recreation.gov/camping/campgrounds/' + availability.campground + '|' + availability.campground + '>:<https://www.recreation.gov/camping/campsites/' + availability.campsite + '|' + availability.campsite + '> on ' + availability.date + '\n'
 
     slack_token = config['slack_token']
     channel = config['slack_channel']
@@ -46,12 +50,33 @@ def scan_campsite(id, year, month):
         availabilities = campsite[1]['availabilities']
         for date, availability in availabilities.items():
             date_parse = datetime.strptime(date, '%Y-%m-%dT%H:%M:%SZ')
-            if date_parse.weekday() == 5 and availability == 'Available':
-                available_campsites.append((id, key, date_parse.strftime('%Y-%m-%d')))
+            site = Site(id, key, date_parse.strftime('%Y-%m-%d'))
+            if date_parse.weekday() == 5 and availability == 'Available' and site_not_in_pickle(site):
+                add_site_to_pickle(site)
+                newly_available_campsites.append(site)
 
 
-available_campsites = []
+def site_not_in_pickle(site):
+    try:
+        availabilities_pickle = pickle.load(open('availabilities.pickle', 'rb'))
+        print(availabilities_pickle)
+    except(EOFError, FileNotFoundError) as e:
+        availabilities_pickle = set()
+        pickle.dump(availabilities_pickle, open('availabilities.pickle', 'wb'))
+    if site in availabilities_pickle:
+        return False
+    else:
+        return True
+
+
+def add_site_to_pickle(site):
+    availabilities_pickle = pickle.load(open('availabilities.pickle', 'rb'))
+    availabilities_pickle.add(site)
+    pickle.dump(availabilities_pickle, open('availabilities.pickle', 'wb'))
+
+
+newly_available_campsites = []
 scan_all_campsites()
 
-if available_campsites.__len__() > 0:
-    found_availabilities(available_campsites)
+if newly_available_campsites.__len__() > 0:
+    found_availabilities(newly_available_campsites)
