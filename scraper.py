@@ -51,7 +51,7 @@ def scan_campsite(id, year, month):
         for date, availability in availabilities.items():
             date_parse = datetime.strptime(date, '%Y-%m-%dT%H:%M:%SZ')
             site = Site(id, key, date_parse.strftime('%Y-%m-%d'))
-            if date_parse.weekday() == 5 and availability == 'Available' and site_not_in_pickle(site):
+            if date_parse.weekday() == int(config['dayofweek']) and availability == 'Available' and site_not_in_pickle(site):
                 add_site_to_pickle(site)
                 newly_available_campsites.append(site)
 
