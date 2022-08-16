@@ -3,13 +3,12 @@ import requests
 import json
 import pickle
 import collections
-from slackclient import SlackClient
+from slack_sdk import WebClient
 
 with open('config.json') as config_file:
     config = json.loads(config_file.read())
 
 Site = collections.namedtuple('Site', 'campground, campsite, date')
-
 
 def scan_all_campsites():
     year = config['year']
@@ -26,13 +25,8 @@ def found_availabilities(availabilities):
 
     slack_token = config['slack_token']
     channel = config['slack_channel']
-    sc = SlackClient(slack_token)
-    sc.api_call(
-        "chat.postMessage",
-        channel=channel,
-        text=message,
-        as_user=False
-    )
+    sc = WebClient(slack_token)
+    sc.chat_postMessage(channel=channel, text=message)
 
 
 def scan_campsite(id, year, month):
